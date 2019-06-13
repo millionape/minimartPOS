@@ -242,7 +242,7 @@ class MyApp(QMainWindow):
             # qApp.quit()
 
     def db_search(self,bar):
-        with open('inventory.json') as json_file:  
+        with open('inventory.json',encoding='utf8') as json_file:  
             data = json.load(json_file)
             for p in data['data']:
                 if p['product_NUMBER'] == bar:

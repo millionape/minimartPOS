@@ -35,6 +35,7 @@ class ProductSearch(QMainWindow):
         self.ui.setupUi(self)
         self.onlyFloat = QDoubleValidator()
         # self.ui.recvCash.setValidator(self.onlyFloat)
+        self.ui.lineEdit.setValidator(self.onlyFloat)
         self.ui.lineEdit_3.setValidator(self.onlyFloat)
         self.ui.lineEdit_4.setValidator(self.onlyFloat)
         self.ui.pushButton_4.setEnabled(False)
@@ -208,7 +209,7 @@ class CheckoutDialog(QMainWindow):
             print("some error")
         
     def keyPressEvent(self, q):
-        if q.key()  == QtCore.Qt.Key_Return :
+        if q.key()  == (QtCore.Qt.Key_Return or QtCore.Qt.Key_Enter) :
             if len(self.ui.recvCash.text()) >0:
                 recv = float(self.ui.recvCash.text())
                 if recv > 0:
@@ -276,6 +277,7 @@ class MyApp(QMainWindow):
         self.ui.search_btn2.clicked.connect(self.addProductCustom)
         self.ui.lcdNumber.display(0.0)
         self.onlyFloat = QDoubleValidator()
+        self.ui.barcodeText.setValidator(self.onlyFloat)
         self.ui.price_text.setValidator(self.onlyFloat)
         self.ui.price_plus.clicked.connect(self.plusPrice)
         self.ui.price_minus.clicked.connect(self.minusPrice)
@@ -529,16 +531,14 @@ class MyApp(QMainWindow):
 
     def keyPressEvent(self, q):
         self.ui.barcodeText.setFocus()
-        if q.key()  == QtCore.Qt.Key_Return :
+        if q.key()  == (QtCore.Qt.Key_Return or QtCore.Qt.Key_Enter):
             global barcode_recv
             self.queryFromBarcode(barcode_recv)
             print('return')
-        elif q.key() == QtCore.Qt.Key_Enter :   
-            print('enter')
-        elif q.key() == QtCore.Qt.Key_F9 :   
+        elif q.key() == QtCore.Qt.Key_F10 :   
             self.plusAmount()
             self.ui.barcodeText.setFocus()
-        elif q.key() == QtCore.Qt.Key_F10 :  
+        elif q.key() == QtCore.Qt.Key_F9 :  
             self.minusAmount() 
         elif q.key() == QtCore.Qt.Key_F1 :  
             self.clearAll() 

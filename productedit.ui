@@ -19,7 +19,7 @@
      <rect>
       <x>90</x>
       <y>90</y>
-      <width>431</width>
+      <width>291</width>
       <height>31</height>
      </rect>
     </property>
@@ -42,7 +42,7 @@
     <property name="font">
      <font>
       <family>Arial</family>
-      <pointsize>20</pointsize>
+      <pointsize>15</pointsize>
      </font>
     </property>
     <property name="text">
@@ -52,20 +52,23 @@
    <widget class="QLabel" name="label_2">
     <property name="geometry">
      <rect>
-      <x>210</x>
+      <x>80</x>
       <y>10</y>
-      <width>241</width>
+      <width>481</width>
       <height>51</height>
      </rect>
     </property>
     <property name="font">
      <font>
       <family>Arial</family>
-      <pointsize>30</pointsize>
+      <pointsize>25</pointsize>
      </font>
     </property>
     <property name="text">
      <string>เพิ่มสินค้าเข้าคลัง</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
     </property>
    </widget>
    <widget class="Line" name="line">
@@ -84,7 +87,7 @@
    <widget class="QPushButton" name="pushButton">
     <property name="geometry">
      <rect>
-      <x>540</x>
+      <x>390</x>
       <y>90</y>
       <width>81</width>
       <height>31</height>
@@ -119,7 +122,7 @@
     <property name="font">
      <font>
       <family>Arial</family>
-      <pointsize>20</pointsize>
+      <pointsize>15</pointsize>
      </font>
     </property>
     <property name="text">
@@ -146,14 +149,14 @@
      <rect>
       <x>300</x>
       <y>150</y>
-      <width>81</width>
+      <width>91</width>
       <height>31</height>
      </rect>
     </property>
     <property name="font">
      <font>
       <family>Arial</family>
-      <pointsize>20</pointsize>
+      <pointsize>15</pointsize>
      </font>
     </property>
     <property name="text">
@@ -188,7 +191,7 @@
     <property name="font">
      <font>
       <family>Arial</family>
-      <pointsize>20</pointsize>
+      <pointsize>15</pointsize>
      </font>
     </property>
     <property name="text">
@@ -223,7 +226,7 @@
     <property name="font">
      <font>
       <family>Arial</family>
-      <pointsize>20</pointsize>
+      <pointsize>15</pointsize>
      </font>
     </property>
     <property name="text">
@@ -261,7 +264,7 @@
    <widget class="QLabel" name="label_7">
     <property name="geometry">
      <rect>
-      <x>150</x>
+      <x>160</x>
       <y>250</y>
       <width>131</width>
       <height>31</height>
@@ -270,7 +273,7 @@
     <property name="font">
      <font>
       <family>Arial</family>
-      <pointsize>20</pointsize>
+      <pointsize>15</pointsize>
      </font>
     </property>
     <property name="text">
@@ -348,6 +351,19 @@
     </property>
     <property name="text">
      <string>ลบ</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_5">
+    <property name="geometry">
+     <rect>
+      <x>480</x>
+      <y>90</y>
+      <width>131</width>
+      <height>32</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>รายการทั้งหมด</string>
     </property>
    </widget>
   </widget>

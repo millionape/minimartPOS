@@ -80,7 +80,7 @@
     <property name="font">
      <font>
       <family>Arial</family>
-      <pointsize>30</pointsize>
+      <pointsize>15</pointsize>
      </font>
     </property>
     <property name="text">
@@ -99,7 +99,7 @@
     <property name="font">
      <font>
       <family>Arial</family>
-      <pointsize>25</pointsize>
+      <pointsize>23</pointsize>
      </font>
     </property>
     <property name="value">
@@ -118,7 +118,7 @@
     <property name="font">
      <font>
       <family>Arial</family>
-      <pointsize>20</pointsize>
+      <pointsize>15</pointsize>
      </font>
     </property>
     <property name="text">
@@ -159,7 +159,7 @@
     <property name="font">
      <font>
       <family>Arial</family>
-      <pointsize>40</pointsize>
+      <pointsize>30</pointsize>
      </font>
     </property>
     <property name="text">
@@ -178,7 +178,7 @@
     <property name="font">
      <font>
       <family>Arial</family>
-      <pointsize>20</pointsize>
+      <pointsize>15</pointsize>
      </font>
     </property>
     <property name="text">
@@ -197,7 +197,7 @@
     <property name="font">
      <font>
       <family>Arial</family>
-      <pointsize>40</pointsize>
+      <pointsize>30</pointsize>
      </font>
     </property>
     <property name="text">
@@ -216,7 +216,7 @@
     <property name="font">
      <font>
       <family>Arial</family>
-      <pointsize>40</pointsize>
+      <pointsize>30</pointsize>
      </font>
     </property>
     <property name="text">
@@ -235,7 +235,7 @@
     <property name="font">
      <font>
       <family>Arial</family>
-      <pointsize>20</pointsize>
+      <pointsize>15</pointsize>
      </font>
     </property>
     <property name="text">
@@ -269,7 +269,7 @@
     <property name="font">
      <font>
       <family>Arial</family>
-      <pointsize>20</pointsize>
+      <pointsize>15</pointsize>
      </font>
     </property>
     <property name="text">
@@ -445,7 +445,7 @@
     <property name="font">
      <font>
       <family>Arial</family>
-      <pointsize>30</pointsize>
+      <pointsize>15</pointsize>
      </font>
     </property>
     <property name="text">

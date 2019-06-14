@@ -2,16 +2,151 @@
 
 import sys
 import json
+import pyrebase
+import datetime
+import os
+import random
+import string
+import requests
 from PyQt5 import QtCore, QtGui, QtWidgets 
 from PyQt5.QtGui import QDoubleValidator
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QWidget, QApplication, QMainWindow ,QTableWidgetItem , QTableView ,QHeaderView,QMessageBox,QMenu,QAction
 from mainwindow import Ui_MainWindow
 from checkoutdialog import Ui_Dialog
+from productedit import Ui_MainWindowProduct
 from functools import partial
+config = {
+  "apiKey": "P7Fx3FCquDlCXdauc3Z91lgdRLu7VsFtyq51RU4R",
+  "authDomain": "minimartpos.firebaseapp.com",
+  "databaseURL": "https://minimartpos.firebaseio.com",
+  "storageBucket": "minimartpos.appspot.com"
+}
+
+firebase = pyrebase.initialize_app(config)
 
 barcode_recv = ""
 lst = []
+barr = ""
+class ProductSearch(QMainWindow):
+    def __init__(self, parent=None ):
+        QWidget.__init__(self, parent,QtCore.Qt.WindowStaysOnTopHint)
+        
+        self.ui = Ui_MainWindowProduct()
+        self.ui.setupUi(self)
+        self.ui.pushButton_4.setEnabled(False)
+        self.ui.pushButton_2.clicked.connect(self.closeApp)
+        self.ui.lineEdit.setFocusPolicy(QtCore.Qt.StrongFocus)
+        self.ui.lineEdit.setFocus()
+        self.ui.lineEdit.textChanged.connect(self.barListenner)
+        self.ui.spinBox.hide()
+        self.ui.label_6.hide()
+        self.ui.pushButton_3.clicked.connect(self.dbAddNew)
+        self.ui.lineEdit_2.hide()
+        self.ui.lineEdit_3.hide()
+        self.ui.lineEdit_4.hide()
+        self.ui.lineEdit_5.hide()
+    def closeApp(self):
+        self.close()
+    def hideBox(self):
+        self.ui.lineEdit_2.hide()
+        self.ui.lineEdit_3.hide()
+        self.ui.lineEdit_4.hide()
+        self.ui.lineEdit_5.hide()
+    def showBox(self):
+        self.ui.lineEdit_2.show()
+        self.ui.lineEdit_3.show()
+        self.ui.lineEdit_4.show()
+        self.ui.lineEdit_5.show()
+    def is_not_blank(self,s):
+        return bool(s and s.strip())
+    def dbAddNew(self):
+        db = firebase.database()
+        now = datetime.datetime.now()
+        bar = self.ui.lineEdit.text()
+        name = self.ui.lineEdit_2.text()
+        cost = self.ui.lineEdit_3.text()
+        price = self.ui.lineEdit_4.text()
+        date = now.strftime("%Y-%m-%d %H:%M:%S")
+        if self.is_not_blank(bar) or self.is_not_blank(name) or self.is_not_blank(cost) or self.is_not_blank(price):
+            data = {
+                "cost": cost,
+                "date": date,
+                "price": price,
+                "product_NAME": name,
+                "product_NUMBER": bar
+            }
+            db.child("datas").child(bar).update(data)
+            msg = QMessageBox()
+            msg.setIcon(QMessageBox.Information)
+            msg.setText("เพิ่มข้อมูลสำเร็จ")
+            msg.exec_()
+            self.close()
+        else:
+            msg = QMessageBox()
+            msg.setIcon(QMessageBox.Information)
+            msg.setText("โปรดใส่ข้อมูลให้ครบ")
+            msg.exec_()
+        # data = {
+        #     "cost": cost,
+        #     "date": date,
+        #     "price": price,
+        #     "product_NAME": name,
+        #     "product_NUMBER": bar
+        # }
+        # db.child("data").child(str(lastIndex)).set(data)
+        # msg = QMessageBox()
+        # msg.setIcon(QMessageBox.Information)
+        # msg.setText("เพิ่มข้อมูลสำเร็จ")
+        # msg.exec_()
+
+
+    def barListenner(self,text):
+        global barr
+        barr = text
+    def disableAll(self):
+        self.ui.lineEdit.setEnabled(False)
+    def enableAll(self):
+        self.ui.lineEdit.setEnabled(True)
+    def searchProduct(self,bar):
+        db = firebase.database()
+        
+        product = db.child("datas").get()
+        # print(type(product.val()))
+        for x in product.each():
+            print(x.key())
+            print(x.val().get("product_NUMBER"))
+            if x.val().get("product_NUMBER") == bar:
+                self.showBox()
+                self.ui.pushButton_4.setEnabled(True)
+                self.ui.lineEdit_2.setText(x.val().get('product_NAME'))
+                self.ui.lineEdit_3.setText(x.val().get('cost'))
+                self.ui.lineEdit_4.setText(x.val().get('price'))
+                self.ui.lineEdit_5.setText(x.val().get('date'))
+                return None
+        self.showBox()
+        msg = QMessageBox()
+        msg.setIcon(QMessageBox.Information)
+        msg.setText("ไม่พบสินค้าในฐานข้อมูล")
+        # msg.setInformativeText("Information")
+        # msg.setWindowTitle("ลบรายการทั้งหมด")
+        # msg.setStandardButtons(QMessageBox.Cancel | QMessageBox.Ok )    
+        # msg.setDefaultButton(QMessageBox.Ok)   
+        msg.exec_()
+        self.ui.lineEdit_2.setFocus()
+                
+        # print(product.val())
+
+        
+    def keyPressEvent(self, q):
+        if q.key()  == QtCore.Qt.Key_Return :
+            global barr
+            self.searchProduct(barr)
+            print('return')
+        elif q.key()  == QtCore.Qt.Key_Escape :
+            self.closeApp()
+        
+            
 class CheckoutDialog(QMainWindow):
     def __init__(self, parent=None ):
         QWidget.__init__(self, parent)
@@ -22,6 +157,8 @@ class CheckoutDialog(QMainWindow):
         self.ui.recvCash.setFocus()
         self.onlyFloat = QDoubleValidator()
         self.ui.recvCash.setValidator(self.onlyFloat)
+        self.ui.pushButton.clicked.connect(self.exitDialog)
+        self.ui.okBtn.clicked.connect(self.change)
         # print("total pass val="+str(val))
     def insertMoneyBtn(self,note):
         if len(self.ui.recvCash.text()) > 0:
@@ -31,6 +168,11 @@ class CheckoutDialog(QMainWindow):
             self.ui.recvCash.setText(str(recv))
         else:
             self.ui.recvCash.setText(str(float(note)))
+    def change(self):
+        if len(self.ui.recvCash.text()) >0:
+            recv = float(self.ui.recvCash.text())
+            self.calChange(recv)
+
     def calChange(self,recv):
         self.ui.lcdNumber_2.display(recv)
 
@@ -49,6 +191,14 @@ class CheckoutDialog(QMainWindow):
             # if retval == QMessageBox.Ok:
         else:
             self.ui.lcdNumber_3.display(recv-total)
+    def exitDialog(self):
+        try:
+            recv = float(self.ui.recvCash.text())
+            self.mainWin.clearAllFromDialog(recv)
+            self.close()
+        except:
+            self.close()
+            print("some error")
         
     def keyPressEvent(self, q):
         if q.key()  == QtCore.Qt.Key_Return :
@@ -74,7 +224,8 @@ class CheckoutDialog(QMainWindow):
                 msg.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)            
                 retval = msg.exec_()
         elif q.key() == QtCore.Qt.Key_Escape:
-            self.mainWin.clearAllFromDialog()
+            recv = float(self.ui.recvCash.text())
+            self.mainWin.clearAllFromDialog(recv)
             self.close()
             print('exit')
         # elif q.key() == QtCore.Qt.Key_F9 :   
@@ -85,17 +236,27 @@ class MyApp(QMainWindow):
         QWidget.__init__(self, parent)
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
+        
+        bar = self.menuBar()
+        file_menu = bar.addMenu('สินค้า')
+        productEdit = QtWidgets.QAction('เพิ่ม หรือ แก้ไขสินค้า', self)
+        refreshBtn = QtWidgets.QAction('รีเฟรชข้อมูล', self)
+        file_menu.addAction(productEdit)
+        file_menu.addAction(refreshBtn)
+
+        productEdit.triggered.connect(self.productEditFunc)
+        refreshBtn.triggered.connect(self.refreshFunc)
         self.ui.tableWidget.setColumnCount(5) # index | barcode |name | price | amount | total
         self.ui.tableWidget.setHorizontalHeaderLabels(['บาร์โค๊ด', 'ชื่อ', 'ราคา', 'จำนวน', 'ราคารวม'])
         self.ui.tableWidget.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         self.ui.tableWidget.setSelectionBehavior(QTableView.SelectRows)
-        header = self.ui.tableWidget.horizontalHeader()       
-        header.setSectionResizeMode(0, QtWidgets.QHeaderView.ResizeToContents)
-        header.setSectionResizeMode(1, QtWidgets.QHeaderView.ResizeToContents)
-        header.setSectionResizeMode(2, QtWidgets.QHeaderView.ResizeToContents)
-        header.setSectionResizeMode(3, QtWidgets.QHeaderView.ResizeToContents)
-        header.setSectionResizeMode(4, QtWidgets.QHeaderView.ResizeToContents)
-        # self.ui.tableWidget.itemChanged.connect(self.tableSignal) 
+        # header = self.ui.tableWidget.horizontalHeader()       
+        # header.setSectionResizeMode(0, QtWidgets.QHeaderView.ResizeToContents)
+        # header.setSectionResizeMode(1, QtWidgets.QHeaderView.ResizeToContents)
+        # header.setSectionResizeMode(2, QtWidgets.QHeaderView.ResizeToContents)
+        # header.setSectionResizeMode(3, QtWidgets.QHeaderView.ResizeToContents)
+        # header.setSectionResizeMode(4, QtWidgets.QHeaderView.ResizeToContents)
+        self.ui.tableWidget.itemChanged.connect(self.tableSignal) 
         self.ui.barcodeText.setFocusPolicy(Qt.StrongFocus)
         self.ui.barcodeText.setFocus()
         # self.ui.barcodeText.setFocus()
@@ -118,6 +279,52 @@ class MyApp(QMainWindow):
         #     data = json.load(json_file)
         #     for p in data['data']:
         #         self.rowAppend(p)
+    def refreshFunc(self):
+        flag = False
+        try:
+            print('Beginning file download with requests')
+            url = 'https://minimartpos.firebaseio.com/datas.json'  
+            r = requests.get(url)
+            with open('./data.json', 'wb') as f:  
+                f.write(r.content)
+                f.close()
+            # Retrieve HTTP meta-data
+            print(r.status_code)  
+            print(r.headers['content-type'])  
+            print(r.encoding)  
+            if r.status_code == 200:
+                flag = True
+            else:
+                flag = False
+        except :
+            flag = False
+
+        if flag:
+            msg = QMessageBox()
+            msg.setIcon(QMessageBox.Information)
+            msg.setText("รีเฟรชข้อมูลสำเร็จ")
+            # msg.setInformativeText("ต้องการเปิดโปรแกรมหรือไม่")
+            msg.setWindowTitle("สำเร็จ")
+            msg.setStandardButtons(QMessageBox.Ok)            
+            retval = msg.exec_()
+            return None
+        else:
+            msg = QMessageBox()
+            msg.setIcon(QMessageBox.Information)
+            msg.setText("ไม่สามารถดาวน์โหลดข้อมูลปัจจุบันได้")
+            # msg.setInformativeText("ต้องการเปิดโปรแกรมหรือไม่")
+            msg.setWindowTitle("ผิดพลาด")
+            msg.setStandardButtons(QMessageBox.Ok)            
+            retval = msg.exec_()
+            return None
+        return None
+    def productEditFunc(self):
+        proEdit = ProductSearch(self)
+        proEdit.show()
+        print("product")
+    def randomString(self,stringLength=18):
+        letters = string.ascii_lowercase
+        return ''.join(random.choice(letters) for i in range(stringLength))
     def checkout(self):
         totalPrice = self.ui.lcdNumber.value()
         rowPosition = self.ui.tableWidget.rowCount()
@@ -135,7 +342,42 @@ class MyApp(QMainWindow):
             msg.setDefaultButton(QMessageBox.Ok)   
             retval = msg.exec_()
         # checkDialog.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
-    def clearAllFromDialog(self):
+    def clearAllFromDialog(self,recv):
+        arrTmp = []
+        rowPosition = self.ui.tableWidget.rowCount()
+        now = datetime.datetime.now()
+        rString = self.randomString(18)
+        for index in range(rowPosition):
+            tmpDict = {}
+            tmpDict['barcode'] = self.ui.tableWidget.item(index, 0).text()
+            tmpDict['name'] = self.ui.tableWidget.item(index, 1).text()
+            tmpDict['price'] = self.ui.tableWidget.item(index, 2).text()
+            tmpDict['quantity'] = self.ui.tableWidget.item(index, 3).text()
+            tmpDict['totoal'] = self.ui.tableWidget.item(index, 4).text()
+            arrTmp.append(tmpDict)
+        # print(arrTmp)
+            
+        db = firebase.database()
+        data = {
+            "transectionNumber": rString,
+            "date":now.isoformat(),
+            "total":self.ui.lcdNumber.value(),
+            "cash":recv,
+            "plist":arrTmp
+        }
+        dbpath = "transections/{}/{}".format(now.strftime("%Y-%m-%d"),now.strftime("%H-%M-%S"))
+        print(data)
+        try:
+            os.makedirs(dbpath)    
+            print("Directory " , dbpath ,  " Created ")
+        except FileExistsError:
+            print("Directory " , dbpath ,  " already exists")
+        with open(dbpath+"/"+rString+'.json', 'w',encoding='utf8') as json_file:  
+            json.dump(data, json_file,ensure_ascii=False)
+        # dbpath = "transections/{}/{}".format(now.strftime("%Y-%m-%d"),now.strftime("%H:%M:%S"))
+        # results = db.child(dbpath).set(data)
+
+
         try:
             self.ui.tableWidget.itemChanged.disconnect()
         except Exception:
@@ -212,7 +454,7 @@ class MyApp(QMainWindow):
         self.queryFromBarcode(barcode_recv)
     def minusAmount(self):
         amount = self.ui.amountBox.value()
-        if amount > 0:
+        if amount > 1:
             self.ui.amountBox.setValue(amount-1)
     def plusAmount(self):
         amount = self.ui.amountBox.value()
@@ -242,21 +484,25 @@ class MyApp(QMainWindow):
             # qApp.quit()
 
     def db_search(self,bar):
-        with open('inventory.json',encoding='utf8') as json_file:  
+        with open('data.json',encoding='utf8') as json_file:  
             data = json.load(json_file)
-            for p in data['data']:
-                if p['product_NUMBER'] == bar:
-                    print("found barcode"+bar)
-                    self.rowAppend(p)
-                    return None
-            msg = QMessageBox()
-            msg.setIcon(QMessageBox.Information)
-            msg.setText("ไม่พบสินค้า")
-            msg.setInformativeText("Information")
-            msg.setWindowTitle("ผิดพลาด")
-            msg.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)            
-            retval = msg.exec_()
-            print ("value of pressed message box button:", retval)
+            if bar in data:
+                self.rowAppend(data[bar])
+                return None
+            else:
+                # for p in data:
+                #     if p['product_NUMBER'] == bar:
+                #         print("found barcode"+bar)
+                #         self.rowAppend(p)
+                #         return None
+                msg = QMessageBox()
+                msg.setIcon(QMessageBox.Information)
+                msg.setText("ไม่พบสินค้า")
+                msg.setInformativeText("Information")
+                msg.setWindowTitle("ผิดพลาด")
+                msg.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)            
+                retval = msg.exec_()
+                print ("value of pressed message box button:", retval)
             return None
                     
                     
@@ -284,6 +530,8 @@ class MyApp(QMainWindow):
             self.clearAll() 
         elif q.key() == QtCore.Qt.Key_F12 :  
             self.checkout()
+        elif q.key() == QtCore.Qt.Key_F2 : 
+            self.ui.barcodeText.setFocus()
     def checkBarcode(self,text):
         global barcode_recv
         barcode_recv = text
@@ -350,6 +598,41 @@ class MyApp(QMainWindow):
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    myapp = MyApp()
-    myapp.show()
-    sys.exit(app.exec_())
+    flag = False
+    try:
+        print('Beginning file download with requests')
+        url = 'https://minimartpos.firebaseio.com/datas.json'  
+        r = requests.get(url)
+        with open('./data.json', 'wb') as f:  
+            f.write(r.content)
+            f.close()
+        # Retrieve HTTP meta-data
+        print(r.status_code)  
+        print(r.headers['content-type'])  
+        print(r.encoding)  
+        if r.status_code == 200:
+            flag = True
+        else:
+            flag = False
+    except :
+        flag = False
+    if flag:
+        myapp = MyApp()
+        myapp.show()
+        sys.exit(app.exec_())
+    else:
+        msg = QMessageBox()
+        msg.setIcon(QMessageBox.Information)
+        msg.setText("ไม่สามารถดาวน์โหลดข้อมูลปัจจุบันได้")
+        msg.setInformativeText("ต้องการเปิดโปรแกรมหรือไม่")
+        msg.setWindowTitle("แจ้งเตือน")
+        msg.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)            
+        retval = msg.exec_()
+        if retval == QMessageBox.Ok:
+            myapp = MyApp()
+            myapp.show()
+            sys.exit(app.exec_())
+        else:
+            sys.exit(0)
+
+

@@ -83,12 +83,14 @@ class ProductSearch(QMainWindow):
             msg = QMessageBox()
             msg.setIcon(QMessageBox.Information)
             msg.setText("เพิ่มข้อมูลสำเร็จ")
+            msg.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
             msg.exec_()
             self.close()
         else:
             msg = QMessageBox()
             msg.setIcon(QMessageBox.Information)
             msg.setText("โปรดใส่ข้อมูลให้ครบ")
+            msg.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
             msg.exec_()
         # data = {
         #     "cost": cost,
@@ -131,6 +133,7 @@ class ProductSearch(QMainWindow):
         msg = QMessageBox()
         msg.setIcon(QMessageBox.Information)
         msg.setText("ไม่พบสินค้าในฐานข้อมูล")
+        msg.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
         # msg.setInformativeText("Information")
         # msg.setWindowTitle("ลบรายการทั้งหมด")
         # msg.setStandardButtons(QMessageBox.Cancel | QMessageBox.Ok )    
@@ -189,7 +192,8 @@ class CheckoutDialog(QMainWindow):
             msg.setText("จำนวนเงินไม่ถูกต้อง")
             # msg.setInformativeText("Information")
             msg.setWindowTitle("ผิดพลาด")
-            msg.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)            
+            msg.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)   
+            msg.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)         
             retval = msg.exec_()
             # if retval == QMessageBox.Ok:
         else:
@@ -212,6 +216,7 @@ class CheckoutDialog(QMainWindow):
                     print('return')
                 else:
                     msg = QMessageBox()
+                    msg.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
                     msg.setIcon(QMessageBox.Information)
                     msg.setText("จำนวนเงินไม่ถูกต้อง")
                     # msg.setInformativeText("Information")
@@ -220,6 +225,7 @@ class CheckoutDialog(QMainWindow):
                     retval = msg.exec_() 
             else:
                 msg = QMessageBox()
+                msg.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
                 msg.setIcon(QMessageBox.Information)
                 msg.setText("จำนวนเงินไม่ถูกต้อง")
                 # msg.setInformativeText("Information")
@@ -305,6 +311,7 @@ class MyApp(QMainWindow):
         if flag:
             msg = QMessageBox()
             msg.setIcon(QMessageBox.Information)
+            msg.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
             msg.setText("รีเฟรชข้อมูลสำเร็จ")
             # msg.setInformativeText("ต้องการเปิดโปรแกรมหรือไม่")
             msg.setWindowTitle("สำเร็จ")
@@ -314,6 +321,7 @@ class MyApp(QMainWindow):
         else:
             msg = QMessageBox()
             msg.setIcon(QMessageBox.Information)
+            msg.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
             msg.setText("ไม่สามารถดาวน์โหลดข้อมูลปัจจุบันได้")
             # msg.setInformativeText("ต้องการเปิดโปรแกรมหรือไม่")
             msg.setWindowTitle("ผิดพลาด")
@@ -338,6 +346,7 @@ class MyApp(QMainWindow):
         else:
             msg = QMessageBox()
             msg.setIcon(QMessageBox.Information)
+            msg.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
             msg.setText("ไม่มีรายการสินค้าให้คำนวน")
             # msg.setInformativeText("Information")
             msg.setWindowTitle("ผิดพลาด")
@@ -401,6 +410,7 @@ class MyApp(QMainWindow):
     def clearAll(self):
         msg = QMessageBox()
         msg.setIcon(QMessageBox.Information)
+        msg.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
         msg.setText("ต้องการที่จะลบรายการทั้งหมดหรือไม่")
         # msg.setInformativeText("Information")
         msg.setWindowTitle("ลบรายการทั้งหมด")
@@ -499,6 +509,7 @@ class MyApp(QMainWindow):
                 #         self.rowAppend(p)
                 #         return None
                 msg = QMessageBox()
+                msg.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
                 msg.setIcon(QMessageBox.Information)
                 msg.setText("ไม่พบสินค้า")
                 msg.setInformativeText("Information")
@@ -625,6 +636,7 @@ if __name__ == '__main__':
         sys.exit(app.exec_())
     else:
         msg = QMessageBox()
+        msg.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
         msg.setIcon(QMessageBox.Information)
         msg.setText("ไม่สามารถดาวน์โหลดข้อมูลปัจจุบันได้")
         msg.setInformativeText("ต้องการเปิดโปรแกรมหรือไม่")

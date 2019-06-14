@@ -209,7 +209,7 @@ class CheckoutDialog(QMainWindow):
             print("some error")
         
     def keyPressEvent(self, q):
-        if q.key()  == (QtCore.Qt.Key_Return or QtCore.Qt.Key_Enter) :
+        if q.key()  == QtCore.Qt.Key_Return or q.key() == QtCore.Qt.Key_Enter:
             if len(self.ui.recvCash.text()) >0:
                 recv = float(self.ui.recvCash.text())
                 if recv > 0:

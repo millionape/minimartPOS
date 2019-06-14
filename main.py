@@ -31,9 +31,12 @@ barr = ""
 class ProductSearch(QMainWindow):
     def __init__(self, parent=None ):
         QWidget.__init__(self, parent,QtCore.Qt.WindowStaysOnTopHint)
-        
         self.ui = Ui_MainWindowProduct()
         self.ui.setupUi(self)
+        self.onlyFloat = QDoubleValidator()
+        # self.ui.recvCash.setValidator(self.onlyFloat)
+        self.ui.lineEdit_3.setValidator(self.onlyFloat)
+        self.ui.lineEdit_4.setValidator(self.onlyFloat)
         self.ui.pushButton_4.setEnabled(False)
         self.ui.pushButton_2.clicked.connect(self.closeApp)
         self.ui.lineEdit.setFocusPolicy(QtCore.Qt.StrongFocus)
@@ -114,8 +117,8 @@ class ProductSearch(QMainWindow):
         product = db.child("datas").get()
         # print(type(product.val()))
         for x in product.each():
-            print(x.key())
-            print(x.val().get("product_NUMBER"))
+            # print(x.key())
+            # print(x.val().get("product_NUMBER"))
             if x.val().get("product_NUMBER") == bar:
                 self.showBox()
                 self.ui.pushButton_4.setEnabled(True)
@@ -133,7 +136,7 @@ class ProductSearch(QMainWindow):
         # msg.setStandardButtons(QMessageBox.Cancel | QMessageBox.Ok )    
         # msg.setDefaultButton(QMessageBox.Ok)   
         msg.exec_()
-        self.ui.lineEdit_2.setFocus()
+        # self.ui.lineEdit_2.setFocus()
                 
         # print(product.val())
 

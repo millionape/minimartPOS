@@ -43,7 +43,7 @@ class ProductSearch(QMainWindow):
         self.ui.lineEdit.setFocusPolicy(QtCore.Qt.StrongFocus)
         self.ui.lineEdit.setFocus()
         self.ui.lineEdit.textChanged.connect(self.barListenner)
-        self.ui.spinBox.hide()
+        self.ui.spinBox.hide() #quantity spin box
         self.ui.label_6.hide()
         self.ui.pushButton_3.clicked.connect(self.dbAddNew)
         self.ui.lineEdit_2.hide()
@@ -62,6 +62,11 @@ class ProductSearch(QMainWindow):
         self.ui.lineEdit_3.show()
         self.ui.lineEdit_4.show()
         self.ui.lineEdit_5.show()
+    def setEmpty(self):
+        self.ui.lineEdit_2.setText("")
+        self.ui.lineEdit_3.setText("")
+        self.ui.lineEdit_4.setText("")
+        self.ui.lineEdit_5.setText("")
     def is_not_blank(self,s):
         return bool(s and s.strip())
     def dbAddNew(self):
@@ -81,9 +86,11 @@ class ProductSearch(QMainWindow):
                 "product_NUMBER": bar
             }
             db.child("datas").child(bar).update(data)
+            self.setEmpty()
             msg = QMessageBox()
             msg.setIcon(QMessageBox.Information)
             msg.setText("เพิ่มข้อมูลสำเร็จ")
+            msg.setInformativeText("บาร์โค๊ด {}\nสินค้า {} \nราคาทุน {}\nราคาขาย {}".format(bar,name,cost,price))
             msg.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
             msg.exec_()
             self.close()
@@ -130,6 +137,7 @@ class ProductSearch(QMainWindow):
                 self.ui.lineEdit_4.setText(x.val().get('price'))
                 self.ui.lineEdit_5.setText(x.val().get('date'))
                 return None
+        self.setEmpty()
         self.showBox()
         msg = QMessageBox()
         msg.setIcon(QMessageBox.Information)
@@ -254,8 +262,17 @@ class MyApp(QMainWindow):
         file_menu.addAction(productEdit)
         file_menu.addAction(refreshBtn)
 
+        barcodeMenu = bar.addMenu('บาร์โค๊ด')
+        barGen = QtWidgets.QAction('สร้างบาร์โค๊ด', self)
+        barcodeMenu.addAction(barGen)
+
+
+
+
         productEdit.triggered.connect(self.productEditFunc)
         refreshBtn.triggered.connect(self.refreshFunc)
+
+        barGen.triggered.connect(self.barcodeGenWindow)
         self.ui.tableWidget.setColumnCount(5) # index | barcode |name | price | amount | total
         self.ui.tableWidget.setHorizontalHeaderLabels(['บาร์โค๊ด', 'ชื่อ', 'ราคา', 'จำนวน', 'ราคารวม'])
         self.ui.tableWidget.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
@@ -290,6 +307,8 @@ class MyApp(QMainWindow):
         #     data = json.load(json_file)
         #     for p in data['data']:
         #         self.rowAppend(p)
+    def barcodeGenWindow(self):
+        print("bar gen open")
     def refreshFunc(self):
         flag = False
         try:
@@ -519,6 +538,7 @@ class MyApp(QMainWindow):
                 msg.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)            
                 retval = msg.exec_()
                 print ("value of pressed message box button:", retval)
+            json_file.close()
             return None
                     
                     
@@ -530,7 +550,7 @@ class MyApp(QMainWindow):
         self.db_search(bar)
 
     def keyPressEvent(self, q):
-        self.ui.barcodeText.setFocus()
+        # self.ui.barcodeText.setFocus()
         if q.key()  == (QtCore.Qt.Key_Return or QtCore.Qt.Key_Enter):
             global barcode_recv
             self.queryFromBarcode(barcode_recv)
@@ -540,11 +560,12 @@ class MyApp(QMainWindow):
             self.ui.barcodeText.setFocus()
         elif q.key() == QtCore.Qt.Key_F9 :  
             self.minusAmount() 
+            self.ui.barcodeText.setFocus()
         elif q.key() == QtCore.Qt.Key_F1 :  
             self.clearAll() 
         elif q.key() == QtCore.Qt.Key_F12 :  
             self.checkout()
-        elif q.key() == QtCore.Qt.Key_F2 : 
+        elif q.key() == QtCore.Qt.Key_Escape : 
             self.ui.barcodeText.setFocus()
     def checkBarcode(self,text):
         global barcode_recv
